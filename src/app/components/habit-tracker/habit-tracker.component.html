@@ -1,0 +1,146 @@
+<div class="p-6">
+  <div>
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-sage-900">{{ monthName() }}</h1>
+        
+        <div class="flex items-center gap-4">
+          <button
+            (click)="previousMonth()"
+            class="p-2 rounded hover:bg-sage-100 transition"
+            title="Previous Month"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <button
+            (click)="nextMonth()"
+            class="p-2 rounded hover:bg-sage-100 transition"
+            title="Next Month"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          
+          <button
+            (click)="goToCurrentMonth()"
+            class="px-3 py-1 text-sm bg-sage-600 text-white rounded-lg hover:bg-sage-700 transition"
+          >
+            Today
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <app-month-header
+          [currentYear]="currentYear"
+          [currentMonth]="currentMonth"
+          [selectedYear]="selectedYear()"
+          [selectedMonth]="selectedMonth()"
+        ></app-month-header>
+
+        <div class="space-y-1">
+          @for (habitData of habitsWithCompletions(); track habitData.habit.id) {
+            <div class="grid gap-1" style="grid-template-columns: minmax(120px, 180px) repeat(31, minmax(0, 1fr));">
+              <div class="flex items-center gap-1 px-2 py-1 bg-white rounded-lg overflow-hidden" [class.border]="editingHabitId() !== habitData.habit.id" [class.border-sage-100]="editingHabitId() !== habitData.habit.id">
+                @if (editingHabitId() === habitData.habit.id) {
+                  <input
+                    type="text"
+                    [value]="editingHabitName()"
+                    (input)="editingHabitName.set($any($event.target).value)"
+                    (keydown.enter)="saveHabitName(habitData.habit.id!)"
+                    (keydown.escape)="cancelEdit()"
+                    (blur)="saveHabitName(habitData.habit.id!)"
+                    class="min-w-0 flex-1 px-2 py-1 -mx-2 -my-1 text-sm border-2 border-sage-500 rounded-lg focus:outline-none"
+                    autofocus
+                  />
+                  <button
+                    title="Save"
+                    (mousedown)="$event.preventDefault(); saveHabitName(habitData.habit.id!)"
+                    class="p-1 ml-1 text-sage-600 hover:bg-sage-100 rounded flex-shrink-0"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                  <button
+                    title="Cancel"
+                    (mousedown)="$event.preventDefault(); cancelEdit()"
+                    class="p-1 -mr-1 text-red-500 hover:bg-red-50 rounded flex-shrink-0"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                } @else {
+                  <span class="flex-1 text-sm font-medium text-sage-800 truncate">
+                    {{ habitData.habit.name }}
+                  </span>
+                  <button
+                    title="Edit"
+                    (click)="startEditHabit(habitData.habit)"
+                    class="p-1 text-sage-400 hover:bg-sage-100 rounded flex-shrink-0"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    title="Delete"
+                    (click)="openDeleteModal(habitData.habit)"
+                    class="p-1 text-red-400 hover:bg-red-50 rounded flex-shrink-0"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                }
+              </div>
+
+              @for (day of getDayArray(); track day) {
+                <button
+                  (click)="toggleCompletion(habitData.habit.id!, day)"
+                  class="h-10 rounded-md transition-all duration-200 border border-transparent min-w-[24px]"
+                  [class.bg-sage-400]="habitData.completions.get(day) && !isFutureDay(day)"
+                  [class.border-sage-400]="habitData.completions.get(day) && !isFutureDay(day)"
+                  [class.bg-sage-100]="!habitData.completions.get(day) && !isFutureDay(day)"
+                  [class.hover:bg-sage-500]="habitData.completions.get(day) && !isFutureDay(day)"
+                  [class.hover:bg-sage-200]="!habitData.completions.get(day) && !isFutureDay(day)"
+                  [class.bg-gray-100]="isFutureDay(day)"
+                  [class.cursor-not-allowed]="isFutureDay(day)"
+                  [class.opacity-50]="isFutureDay(day)"
+                  [disabled]="isFutureDay(day)"
+                  [title]="isFutureDay(day) ? 'Future date' : 'Day ' + day"
+                >
+                  @if (habitData.completions.get(day) && !isFutureDay(day)) {
+                    <svg class="w-5 h-5 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  }
+                </button>
+              }
+            </div>
+          }
+
+          @if (habitsWithCompletions().length === 0) {
+            <div class="text-center py-12 text-sage-500">
+              <p class="text-lg mb-2">No habits yet!</p>
+              <p class="text-sm">Click "Add New Habit" or press 'n' to get started</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (showDeleteModal() && habitToDelete()) {
+  <app-delete-confirmation-modal
+    [habitName]="habitToDelete()!.name"
+    (close)="closeDeleteModal()"
+    (confirm)="confirmDeleteHabit()"
+  ></app-delete-confirmation-modal>
+}

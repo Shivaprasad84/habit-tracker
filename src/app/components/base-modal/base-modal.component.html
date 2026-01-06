@@ -1,0 +1,8 @@
+<div class="fixed inset-0 bg-sage-900/20 backdrop-blur-sm flex items-center justify-center z-50" (click)="onBackdropClick()">
+  <div class="bg-white rounded-2xl p-6 w-96 shadow-xl border border-sage-100" (click)="onContentClick($event)">
+    @if (title) {
+      <h2 class="text-xl font-bold text-sage-900 mb-6">{{ title }}</h2>
+    }
+    <ng-content></ng-content>
+  </div>
+</div>

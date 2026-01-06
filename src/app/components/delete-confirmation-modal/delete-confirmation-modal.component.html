@@ -1,0 +1,22 @@
+<app-base-modal title="Delete Habit" (close)="onClose()">
+  <p class="text-sage-600 mb-6">
+    Are you sure you want to delete <span class="font-bold text-sage-900">"{{ habitName }}"</span>? This action cannot be undone.
+  </p>
+  
+  <div class="flex justify-end gap-2">
+    <button
+      type="button"
+      (click)="onClose()"
+      class="px-4 py-2 text-sage-700 bg-sage-50 rounded-xl hover:bg-sage-100 transition font-medium"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      (click)="onConfirm()"
+      class="px-4 py-2 text-white bg-red-500 rounded-xl hover:bg-red-600 transition font-medium shadow-sm"
+    >
+      Delete
+    </button>
+  </div>
+</app-base-modal>

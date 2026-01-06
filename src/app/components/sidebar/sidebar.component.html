@@ -1,0 +1,70 @@
+<aside class="w-64 bg-white border-r border-sage-100 flex flex-col h-screen">
+  <div class="p-6 flex items-center gap-3">
+    <div class="w-8 h-8 bg-sage-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">H</div>
+    <h1 class="text-xl font-bold text-sage-900 tracking-tight">HABITTRACKER</h1>
+  </div>
+
+  <nav class="flex-1 px-4 py-2">
+    <ul class="space-y-2">
+      @for (item of navItems; track item.id) {
+        <li>
+          <button
+            (click)="onViewChange(item.id)"
+            class="w-full px-4 py-3 text-left rounded-xl transition-all duration-200 font-medium flex items-center gap-3"
+            [class.bg-sage-50]="activeView === item.id"
+            [class.text-sage-700]="activeView === item.id"
+            [class.text-sage-500]="activeView !== item.id"
+            [class.hover:bg-sage-50]="activeView !== item.id"
+            [class.hover:text-sage-600]="activeView !== item.id"
+          >
+            @if (item.id === 'dashboard') {
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            } @else if (item.id === 'habits') {
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+            } @else if (item.id === 'stats') {
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            }
+            {{ item.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="p-6 border-t border-sage-100 space-y-3">
+    <button
+      (click)="onAddHabit()"
+      class="w-full px-4 py-3 bg-sage-600 text-white rounded-xl hover:bg-sage-700 transition duration-200 font-medium shadow-sm flex items-center justify-center gap-2"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      Add New Habit
+    </button>
+
+    <div class="flex gap-2">
+      <button
+        (click)="onExport()"
+        class="flex-1 px-3 py-2 bg-sage-100 text-sage-700 rounded-lg hover:bg-sage-200 transition duration-200 text-sm font-medium flex items-center justify-center gap-1"
+        title="Export data to JSON file"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+        Export
+      </button>
+      <button
+        (click)="onImportClick()"
+        class="flex-1 px-3 py-2 bg-sage-100 text-sage-700 rounded-lg hover:bg-sage-200 transition duration-200 text-sm font-medium flex items-center justify-center gap-1"
+        title="Import data from JSON file"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+        Import
+      </button>
+    </div>
+
+    <input
+      #fileInput
+      type="file"
+      accept=".json"
+      class="hidden"
+      (change)="onFileSelected($event)"
+    />
+  </div>
+</aside>

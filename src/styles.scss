@@ -1,0 +1,18 @@
+@use "tailwindcss";
+
+@theme {
+  --color-mint-50: #EEF5F0;
+  --color-sage-100: #E3EFE6;
+  --color-sage-200: #C2DBC7;
+  --color-sage-300: #A1C7AA;
+  --color-sage-400: #95CDA6;
+  --color-sage-500: #74B188;
+  --color-sage-600: #568B6E;
+  --color-sage-700: #46725A;
+  --color-sage-800: #375947;
+  --color-sage-900: #294235;
+}
+
+button {
+  cursor: pointer;
+}

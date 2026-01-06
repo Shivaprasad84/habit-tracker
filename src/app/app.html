@@ -1,0 +1,36 @@
+<div class="flex h-screen bg-mint-50">
+  <app-sidebar
+    [activeView]="activeView()"
+    (viewChange)="onViewChange($event)"
+    (addHabit)="openAddModal()"
+    (dataImported)="loadHabits()"
+  ></app-sidebar>
+
+  <main class="flex-1 overflow-auto">
+    @switch (activeView()) {
+      @case ('dashboard') {
+        <app-habit-tracker
+          [habits]="habits()"
+          (habitsChanged)="loadHabits()"
+        ></app-habit-tracker>
+      }
+      @case ('habits') {
+        <app-habits-list
+          [habits]="habits()"
+          (updateHabit)="updateHabit($event)"
+          (deleteHabit)="deleteHabit($event)"
+        ></app-habits-list>
+      }
+      @case ('stats') {
+        <app-stats [habits]="habits()"></app-stats>
+      }
+    }
+  </main>
+</div>
+
+@if (showAddModal()) {
+  <app-add-habit-modal
+    (close)="closeAddModal()"
+    (addHabit)="addHabit($event)"
+  ></app-add-habit-modal>
+}

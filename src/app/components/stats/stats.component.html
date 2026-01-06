@@ -1,0 +1,125 @@
+<div class="p-6">
+  <h2 class="text-2xl font-bold text-sage-900 mb-6">Statistics</h2>
+
+  @if (isLoading()) {
+    <div class="text-center py-12 text-sage-500">
+      <p>Loading stats...</p>
+    </div>
+  } @else if (habitStats().length === 0) {
+    <div class="text-center py-12 text-sage-500">
+      <p class="text-lg mb-2">No habits to show stats for!</p>
+      <p class="text-sm">Add some habits and track them to see your statistics</p>
+    </div>
+  } @else {
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Monthly Activity Chart -->
+      <div class="bg-white rounded-xl shadow-sm border border-sage-100 p-4">
+        <div class="flex items-center justify-center gap-4 mb-2">
+          <button 
+            (click)="previousYear()" 
+            class="p-1.5 text-sage-600 hover:bg-sage-100 rounded-lg transition"
+            title="Previous Year"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h3 class="text-base font-bold text-gray-800">Activity Overview - {{ selectedYear() }}</h3>
+          <button 
+            (click)="nextYear()" 
+            class="p-1.5 text-sage-600 hover:bg-sage-100 rounded-lg transition"
+            title="Next Year"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <div class="h-72">
+          <canvas #monthlyChart></canvas>
+        </div>
+      </div>
+
+      <!-- Consistency Score Chart -->
+      <div class="bg-white rounded-xl shadow-sm border border-sage-100 p-4">
+        <div class="flex items-center justify-center gap-4 mb-2">
+          <button 
+            (click)="previousMonth()" 
+            class="p-1.5 text-sage-600 hover:bg-sage-100 rounded-lg transition"
+            title="Previous Month"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h3 class="text-base font-bold text-gray-800">{{ selectedMonthName() }} {{ selectedMonthYear() }} Consistency by Habit</h3>
+          <button 
+            (click)="nextMonth()" 
+            class="p-1.5 text-sage-600 hover:bg-sage-100 rounded-lg transition"
+            title="Next Month"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <div class="text-center text-xs text-sage-500 mb-1">(Lower = Needs Work)</div>
+        <div class="h-68">
+          <canvas #consistencyChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-sage-100 overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-sage-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-medium text-sage-700">Habit</th>
+            <th class="px-4 py-3 text-center text-sm font-medium text-sage-700">Current Streak</th>
+            <th class="px-4 py-3 text-center text-sm font-medium text-sage-700">Best Streak</th>
+            <th class="px-4 py-3 text-center text-sm font-medium text-sage-700">This Month</th>
+            <th class="px-4 py-3 text-center text-sm font-medium text-sage-700">This Year</th>
+            <th class="px-4 py-3 text-center text-sm font-medium text-sage-700">Monthly %</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-sage-100">
+          @for (stat of habitStats(); track stat.habitId) {
+            <tr>
+              <td class="px-4 py-3 text-sage-800 font-medium">{{ stat.habitName }}</td>
+              <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center px-2 py-1 rounded-lg text-sm font-medium bg-orange-100 text-orange-700">
+                  🔥 {{ stat.currentStreak }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-center text-sage-600">
+                <span 
+                  class="cursor-default"
+                  [title]="stat.bestStreakStartDate ? 'Started: ' + formatBestStreakDate(stat.bestStreakStartDate) : ''"
+                >
+                  {{ stat.bestStreak }} days
+                </span>
+              </td>
+              <td class="px-4 py-3 text-center text-sage-600">{{ stat.monthlyCompletions }}</td>
+              <td class="px-4 py-3 text-center text-sage-600">{{ stat.totalCompletions }}</td>
+              <td class="px-4 py-3 text-center">
+                <span 
+                  class="inline-flex items-center px-2 py-1 rounded-lg text-sm font-medium"
+                  [class.bg-green-100]="stat.monthlyConsistency >= 70"
+                  [class.text-green-700]="stat.monthlyConsistency >= 70"
+                  [class.bg-yellow-100]="stat.monthlyConsistency >= 40 && stat.monthlyConsistency < 70"
+                  [class.text-yellow-700]="stat.monthlyConsistency >= 40 && stat.monthlyConsistency < 70"
+                  [class.bg-red-100]="stat.monthlyConsistency < 40"
+                  [class.text-red-700]="stat.monthlyConsistency < 40"
+                >
+                  {{ stat.monthlyConsistency }}%
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
